@@ -110,7 +110,7 @@ $scenes.each { |scene|
     result = []
     options = scene[:options]
     gen(options, 0, result)
-    puts "\# #{results.size} #{result.size}"
+    # puts "\# #{results.size} #{result.size}"
     results.concat result
 }
 
