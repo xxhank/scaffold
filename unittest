@@ -87,7 +87,7 @@ EXE_CPPFlags="$CPPFlags -fpie"
 SO_CPPFlags="$CPPFlags -fPIC -shared"
 
 # shellcheck disable=2068,2086
-g++ $SO_CPPFlags -DUNIT_TEST $CUSTOM_FLAGS $files -o lib"${UINT_TEST}".so || die "build so failed"
+g++ $SO_CPPFlags -DUNIT_TEST $CUSTOM_FLAGS $files -I ./scaffold -o lib"${UINT_TEST}".so || die "build so failed"
 
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-}:.
 # shellcheck disable=2068,2086
