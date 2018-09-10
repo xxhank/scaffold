@@ -15,7 +15,7 @@
 #endif
 
 
-#ifndef __UT_STR__(x)
+#ifndef __UT_STR__
 #define __UT_STR__(x) #x
 #define UT_STR(s) __UT_STR__(s)
 #endif
