@@ -52,7 +52,7 @@ while [[ $# -gt 0 ]];do
   shift
 done
 
-echo "$files"
+#echo "$files"
 #files="$*" #files="nuid_checker.cpp nuid_inspect.cpp"
 
 # 收集test_开头的函数
