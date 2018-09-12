@@ -59,7 +59,7 @@ echo "$files"
 # void test_compareVersion();
 
 #shellcheck disable=2068,2086
-functions="$(grep -o  -E 'test_[a-zA-Z0-9]+\(\)' $files|sed -e 's/.*://g')"
+functions="$(grep -o  -E '\btest_[a-zA-Z0-9_]+\(\)' $files|sed -e 's/.*://g')"
 
 # 生成测试工程
 UINT_TEST="uint_test"
