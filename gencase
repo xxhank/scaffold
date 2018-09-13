@@ -36,8 +36,8 @@ end
 
 def build_case_object(option_name, option_value)
     return {
-        :option=>option_name, 
-        :name=>option_value[:name], 
+        :option=>option_name,
+        :name=>option_value[:name],
         :value=>option_value[:value]}
 end
 =begin
@@ -46,16 +46,16 @@ end
 $process_block = nil
 def process(&block)
     $process_block = block
-end 
+end
 
 =begin
   递归穷举生成测试用例,结果放入result中
-  每条记录形式:option_name, value_name, value_value  
+  每条记录形式:option_name, value_name, value_value
 =end
- 
+
 def gen(options, option_index, result)
-    return if option_index >= options.size 
-    
+    return if option_index >= options.size
+
     option = options[option_index]
     option_values = option[:value]
     option_name = option[:name]
@@ -70,23 +70,23 @@ def gen(options, option_index, result)
             temp_value = []
             temp_value << build_case_object(option_name, option_value)
             result << temp_value
-        end 
+        end
     else
         temp = []
-        for ri in 0...result_count do 
+        for ri in 0...result_count do
             result_value = result[ri]
             for vi in 0...value_count do
-                option_value = option_values[vi] 
+                option_value = option_values[vi]
                 temp_value = [].concat result_value
                 temp_value << build_case_object(option_name, option_value)
                 temp << temp_value
             end
-        end  
-   
+        end
+
         result.clear
         result.concat temp
     end
-   
+
 
     gen(options, option_index+1, result)
 end
@@ -110,20 +110,20 @@ $scenes.each { |scene|
     result = []
     options = scene[:options]
     gen(options, 0, result)
-    # puts "\# #{results.size} #{result.size}"
     results.concat result
 }
 
-for result_value in results do 
+for result_value in results do
     names_ = []
     values_ = []
-    for option in result_value do 
+    for option in result_value do
         names_ << "#{option[:option]}:#{option[:name]}"
         values_ << option[:value]
     end
-    if $process_block.nil?    
+    if $process_block.nil?
         puts "#{names_.join("_")} #{values_.join(", ")}"
     else
         $process_block.call(names_, values_, result_value)
     end
 end
+puts "\# #{results.size}"
