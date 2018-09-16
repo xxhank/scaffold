@@ -8,7 +8,7 @@ $current_option = nil
 
 # 定义一个场景
 def scene(name)
-    scene = {:name=>name,:options=>[]}
+    scene = {:name=>name,:options => []}
     $current_scene = scene
     $scenes << scene
     yield if block_given?
@@ -22,26 +22,83 @@ def option(name)
         $current_scene = scene
         $scenes << scene
     end
-	option = {:name=>name,:value=>[]}
-    $current_option=option
+	option = {:name => name,:value => []}
+    $current_option = option
     $current_scene[:options] << option
     yield if block_given?
 end
 
 # 定义选项的值
-def value(name="",value)
-    name = value if name.empty?
-    $current_option[:value] << {:name=>name, :value=>value}
+@good_tag="good"
+@neutral_tag="neutral"
+@bad_tag="bad"
+
+def value(tag, name, value)
+    name = value if name.nil? || name.empty?
+    name = tag if name.nil? || name.empty?
+    $current_option[:value] << {:tag=>tag, :name=>name, :value=>value}
 end
+
+def values_kv(tag, values)
+    if values.length % 2 == 0
+        for i in 0...values.length/2
+            value(tag, values[2*i], values[2*i+1])
+        end
+    else
+        assert false, "必须是key,value形式"
+    end
+end 
+
+def good(name="",value_="")
+    name = @good_tag if name.empty?
+    value(@good_tag, name, value_) 
+end
+def neutral(name="",value_="")
+    name = @neutral_tag if name.empty?
+    value(@good_tag, name, value_) 
+end
+
+def bad(name="",value_="")
+    name = @bad_tag if name.empty?
+    value(@bad_tag, name, value_) 
+end
+
+
+def goods(*values)
+    values.each { |e| value(@good_tag, @good_tag, e) }
+end
+
+def neutrals(*values)
+    values.each { |e| value(@neutral_tag, @neutral_tag, e) }
+end
+
+def bads(*values)
+    values.each { |e| value(@bad_tag, @bad_tag, e) }
+end
+
+
+def goods_kv(*values)
+    values_kv(@good_tag, values.to_a)
+end
+
+def neutrals_kv(*values)
+    values_kv(@neutral_tag, values.to_a)
+end
+
+def bads_kv(*values)
+    values_kv(@bad_tag, values.to_a)
+end
+
 
 def build_case_object(option_name, option_value)
     return {
         :option=>option_name,
         :name=>option_value[:name],
-        :value=>option_value[:value]}
+        :value=>option_value[:value],
+        :tag=>option_value[:tag]}
 end
 =begin
-    定义处理处理器, 处理器回调参数为names, values, case_object(参考build_case_object)
+    定义处理处理器, 处理器回调参数为index, names, values, tags, case_object(参考build_case_object)
 =end
 $process_block = nil
 def process(&block)
@@ -113,17 +170,22 @@ $scenes.each { |scene|
     results.concat result
 }
 
+result_index=0;
 for result_value in results do
     names_ = []
     values_ = []
+    tags_ = []
     for option in result_value do
         names_ << "#{option[:option]}:#{option[:name]}"
+        tags_ << "#{option[:option]}:#{option[:tag]}"
         values_ << option[:value]
     end
     if $process_block.nil?
         puts "#{names_.join("_")} #{values_.join(", ")}"
     else
-        $process_block.call(names_, values_, result_value)
+        $process_block.call(result_index, names_, values_, tags_, result_value)
     end
+
+    result_index = result_index + 1
 end
 puts "\# #{results.size}"
