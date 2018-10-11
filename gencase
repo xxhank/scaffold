@@ -47,20 +47,20 @@ def values_kv(tag, values)
     else
         assert false, "必须是key,value形式"
     end
-end 
+end
 
 def good(name="",value_="")
     name = @good_tag if name.empty?
-    value(@good_tag, name, value_) 
+    value(@good_tag, name, value_)
 end
 def neutral(name="",value_="")
     name = @neutral_tag if name.empty?
-    value(@good_tag, name, value_) 
+    value(@good_tag, name, value_)
 end
 
 def bad(name="",value_="")
     name = @bad_tag if name.empty?
-    value(@bad_tag, name, value_) 
+    value(@bad_tag, name, value_)
 end
 
 
@@ -163,6 +163,19 @@ eval content
 
 # 枚举生成结果集
 results = []
+
+total_cast_count = 0
+summary_value = []
+$scenes.each { |scene|
+    options = scene[:options]
+    count = 1;
+    options.each { |e| count = count * e[:value].size }
+    summary_value << "\# #{scene[:name]} case count: #{count}"
+    total_cast_count += count;
+}
+
+summary_value << "\# total case count: #{total_cast_count}"
+
 $scenes.each { |scene|
     result = []
     options = scene[:options]
@@ -183,7 +196,7 @@ for result_value in results do
     if $process_block.nil?
         puts "#{names_.join("_")} #{values_.join(", ")}"
     else
-        $process_block.call(result_index, names_, values_, tags_, result_value)
+        $process_block.call(result_index, names_, values_, tags_, result_value, summary_value)
     end
 
     result_index = result_index + 1
